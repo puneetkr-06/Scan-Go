@@ -10,12 +10,13 @@ import payment_qr from '../assets/payment_qr.jpeg'
 
 
 
-const UPI_QR_IMAGE = payment_qr     // ← path relative to /public folder
-const UPI_ID       = 'kumar620060@fam'    // ← your UPI ID shown below the QR
+const UPI_QR_IMAGE = payment_qr
+const UPI_ID = 'kumar620060@fam'
 
 
 function QRPaySection({ total, onConfirm, busy }) {
   const [confirmed, setConfirmed] = useState(false)
+  const [qrFailed, setQrFailed] = useState(false)
 
   async function handleConfirm() {
     setConfirmed(true)
@@ -27,33 +28,35 @@ function QRPaySection({ total, onConfirm, busy }) {
       <div className="rounded-2xl bg-white p-5 shadow-sm border border-stone-100 text-center">
         <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Scan &amp; Pay</p>
         <div className="mx-auto w-fit rounded-2xl border-4 border-[#ffd209] p-2 shadow-md bg-white">
-          <img
-            src={UPI_QR_IMAGE}
-            alt="UPI QR Code"
-            className="h-48 w-48 object-contain rounded-xl"
-            onError={(e) => {
-              // Fallback if image not found
-              e.currentTarget.style.display = 'none'
-              e.currentTarget.nextSibling.style.display = 'flex'
-            }}
-          />
-          {/* Placeholder shown if image fails to load */}
-          <div className="h-48 w-48 rounded-xl bg-stone-100 items-center justify-center flex-col gap-2 text-stone-400 hidden">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-              <rect x="8" y="8" width="10" height="10" fill="currentColor" rx="1"/>
-              <rect x="26" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-              <rect x="30" y="8" width="10" height="10" fill="currentColor" rx="1"/>
-              <rect x="4" y="26" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-              <rect x="8" y="30" width="10" height="10" fill="currentColor" rx="1"/>
-              <rect x="26" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
-              <rect x="34" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
-              <rect x="40" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
-              <rect x="26" y="34" width="4" height="4" fill="currentColor" rx="0.5"/>
-              <rect x="34" y="34" width="10" height="10" fill="currentColor" rx="0.5"/>
-            </svg>
-            <p className="text-xs font-semibold text-center px-4">Place your QR image at<br/><code className="text-[10px]">public/upi-qr.png</code></p>
-          </div>
+          {qrFailed ? (
+            <div className="h-48 w-48 rounded-xl bg-stone-100 items-center justify-center flex-col gap-2 text-stone-400 flex">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect x="4" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                <rect x="8" y="8" width="10" height="10" fill="currentColor" rx="1"/>
+                <rect x="26" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                <rect x="30" y="8" width="10" height="10" fill="currentColor" rx="1"/>
+                <rect x="4" y="26" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                <rect x="8" y="30" width="10" height="10" fill="currentColor" rx="1"/>
+                <rect x="26" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
+                <rect x="34" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
+                <rect x="40" y="26" width="4" height="4" fill="currentColor" rx="0.5"/>
+                <rect x="26" y="34" width="4" height="4" fill="currentColor" rx="0.5"/>
+                <rect x="34" y="34" width="10" height="10" fill="currentColor" rx="0.5"/>
+              </svg>
+              <p className="text-xs font-semibold text-center px-4">
+                QR image failed to load.
+                <br />
+                <span className="text-[10px]">Check src/assets/payment_qr.jpeg</span>
+              </p>
+            </div>
+          ) : (
+            <img
+              src={UPI_QR_IMAGE}
+              alt="UPI QR Code"
+              className="h-48 w-48 object-contain rounded-xl"
+              onError={() => setQrFailed(true)}
+            />
+          )}
         </div>
         <p className="mt-3 text-sm font-bold text-stone-900">{UPI_ID}</p>
         <p className="mt-1 text-2xl font-extrabold text-[#3d9a1f]">₹{Number(total).toFixed(2)}</p>
